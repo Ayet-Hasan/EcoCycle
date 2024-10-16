@@ -1,0 +1,157 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header */
+.container h1,p {
+    text-align: center;
+}
+header {
+    background-color: #006d5b;
+    color: white;
+    padding: 20px 0;
+}
+
+header h1 {
+    font-size: 36px;
+    margin-bottom: 5px;
+}
+
+header p {
+    font-size: 18px;
+}
+
+nav ul {
+    list-style: none;
+    text-align: center;
+    padding: 10px 0;
+}
+
+nav ul li {
+    display: inline-block;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.hero {
+    background-color: #46b6a6;
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.hero h2 {
+    font-size: 32px;
+    color: white;
+}
+
+.hero p {
+    font-size: 20px;
+    color: white;
+}
+
+/* Section - Why Recycle */
+.reasons {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.reasons h3 {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.reasons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.reason-box {
+    background-color: #e0f2f1;
+    padding: 20px;
+    border: 2px solid #26a69a;
+    border-radius: 10px;
+}
+
+.reason-box h4 {
+    margin-top: 15px;
+    font-size: 22px;
+    color: #006d5b;
+}
+
+.reason-box p {
+    font-size: 16px;
+    color: #333;
+}
+
+.icon img {
+    width: 60px;
+    height: 60px;
+}
+
+/* Footer */
+footer {
+    background-color: #004d40;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 28px;
+    }
+
+    .hero h2 {
+        font-size: 24px;
+    }
+
+    .reasons-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 24px;
+    }
+
+    header p {
+        font-size: 16px;
+    }
+
+    .hero h2 {
+        font-size: 20px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .reason-box h4 {
+        font-size: 18px;
+    }
+
+    .reason-box p {
+        font-size: 14px;
+    }
+}
+
+
+

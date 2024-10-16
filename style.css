@@ -153,5 +153,36 @@ footer {
     }
 }
 
+/* buton         ..... */
 
+.button-container {
+    display: flex;
+    gap: 20px;
+}
 
+/* Button Styling */
+.btn {
+    padding: 15px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Login Button with color gradient */
+.login-btn {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f);
+    transform: translateY(-5px);
+}
+.divforflex{
+    display: flex;
+    justify-content: space-between;
+}

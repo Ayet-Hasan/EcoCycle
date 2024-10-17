@@ -10,30 +10,159 @@
     <div class="container">
         <div class="form-box">
             <!-- Login Form -->
-            <div class="form-wrapper login" id="login-form">
+            <div class="form-wrapper login active" id="login-form">
                 <h2>Login</h2>
                 <form>
                     <input type="email" placeholder="Email" required>
                     <input type="password" placeholder="Password" required>
                     <button type="submit" class="btn">Login</button>
-                    <p>Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+                    <p>Don't have an account? <a href="#" id="showSignupOptions">Sign Up here</a></p>
                 </form>
             </div>
 
-            <!-- Sign Up Form -->
-            <div class="form-wrapper signup" id="signup-form">
-                <h2>Sign Up</h2>
+            <!-- Sign Up Options -->
+            <!-- <div class="signup-options" id="signup-options" style="display: none;">
+                <h2>Choose Your Role</h2>
+                <a href="#" class="signup-btn" id="signupAdmin">Sign Up as Admin</a>
+                <a href="#" class="signup-btn" id="signupCollector">Sign Up as Collector</a>
+                <a href="#" class="signup-btn" id="signupAgent">Sign Up as Agent</a>
+            </div> -->
+
+
+
+            <!--  -->
+            <!--  -->
+
+
+            
+    <div class="signup-options" id="signup-options" style="display: none;">
+        <!-- Login as Admin Button -->
+        <a href="#" class="signup-btn " id="signupAdmin">
+            <div class="icon">🔑</div>
+            <div class="text">
+                <h3>Login as Admin</h3>
+                <p class="details">Manage and control the entire system with full access.</p>
+            </div>
+        </a>
+
+        <!-- Login as Collector Button -->
+        <a href="#" class="signup-btn " id="signupCollector">
+            <div class="icon">🛠️</div>
+            <div class="text">
+                <h3>Login as Collector</h3>
+                <p class="details">Submit your collected plastics for rewards and points.</p>
+            </div>
+        </a>
+
+        <!-- Login as Agent Button -->
+        <a href="#" class="signup-btn" id="signupAgent">
+            <div class="icon">📦</div>
+            <div class="text">
+                <h3>Login as Agent</h3>
+                <p class="details">Coordinate between collectors and recycling centers.</p>
+            </div>
+        </a>
+    </div>
+
+
+
+            <!--  -->
+            <!--  -->
+
+            <!-- Sign Up Forms -->
+            <div class="form-wrapper signup" id="signup-admin" style="display: none;">
+                <h2>Sign Up as Admin</h2>
                 <form>
                     <input type="text" placeholder="Full Name" required>
                     <input type="email" placeholder="Email" required>
                     <input type="password" placeholder="Password" required>
                     <button type="submit" class="btn">Sign Up</button>
-                    <p>Already have an account? <a href="#" id="switchToLogin">Login</a></p>
+                    <p>Already have an account? <a href="#" id="backToLogin">Login</a></p>
+                </form>
+            </div>
+
+            <div class="form-wrapper signup" id="signup-collector" style="display: none;">
+                <h2>Sign Up as Collector</h2>
+                <form>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit" class="btn">Sign Up</button>
+                    <p>Already have an account? <a href="#" id="backToLogin">Login</a></p>
+                </form>
+            </div>
+
+            <div class="form-wrapper signup" id="signup-agent" style="display: none;">
+                <h2>Sign Up as Agent</h2>
+                <form>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit" class="btn">Sign Up</button>
+                    <p>Already have an account? <a href="#" id="backToLogin">Login</a></p>
                 </form>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // DOM Elements
+        const loginForm = document.getElementById('login-form');
+        const signupOptions = document.getElementById('signup-options');
+        const signupAdmin = document.getElementById('signup-admin');
+        const signupCollector = document.getElementById('signup-collector');
+        const signupAgent = document.getElementById('signup-agent');
+        const showSignupOptions = document.getElementById('showSignupOptions');
+        const backToLoginLinks = document.querySelectorAll('#backToLogin');
+
+        // Function to reset all forms
+        function resetForms() {
+            loginForm.style.display = 'none';
+            signupOptions.style.display = 'none';
+            signupAdmin.style.display = 'none';
+            signupCollector.style.display = 'none';
+            signupAgent.style.display = 'none';
+        }
+
+        // Show login form by default
+        loginForm.style.display = 'block';
+
+        // Show sign-up options when "Sign Up here" is clicked
+        showSignupOptions.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForms();
+            signupOptions.style.display = 'block';
+        });
+
+        // Show Admin signup form
+        document.getElementById('signupAdmin').addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForms();
+            signupAdmin.style.display = 'block';
+        });
+
+        // Show Collector signup form
+        document.getElementById('signupCollector').addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForms();
+            signupCollector.style.display = 'block';
+        });
+
+        // Show Agent signup form
+        document.getElementById('signupAgent').addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForms();
+            signupAgent.style.display = 'block';
+        });
+
+        // Go back to login form when "Login" is clicked
+        backToLoginLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                resetForms();
+                loginForm.style.display = 'block';
+            });
+        });
+    </script>
 </body>
 </html>

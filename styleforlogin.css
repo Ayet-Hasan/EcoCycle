@@ -115,3 +115,79 @@ p a:hover {
         font-size: 16px;
     }
 }
+
+
+/*  */
+
+
+
+.signup-options {
+    display: flex;
+    
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.signup-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 220px;
+    padding: 20px;
+    background-color: #e0f7fa;
+    border: 2px solid #00acc1;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    color: #006064;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.signup-btn .icon {
+    font-size: 40px;
+}
+
+.signup-btn h3 {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.signup-btn .details {
+    display: none;
+    font-size: 14px;
+    margin-top: 5px;
+    color: #004d40;
+}
+
+.signup-btn:hover {
+    background-color: #b2ebf2;
+    border-color: #00838f;
+    transform: translateY(-5px);
+}
+
+.signup-btn:hover .details {
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .signup-options {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .signup-btn {
+        width: 100%;
+    }
+}
+
+
+
+
+
+/*  */

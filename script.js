@@ -1,31 +1,58 @@
+
 // DOM Elements
 const loginForm = document.getElementById('login-form');
-const signupForm = document.getElementById('signup-form');
-const switchToSignup = document.getElementById('switchToSignup');
-const switchToLogin = document.getElementById('switchToLogin');
-//
-// const switchToSignup = document.getElementById('signup-optoin');
-// const signupOption = document.getElementById('signup-option');
+const signupOptions = document.getElementById('signup-options');
+const signupAdmin = document.getElementById('signup-admin');
+const signupCollector = document.getElementById('signup-collector');
+const signupAgent = document.getElementById('signup-agent');
+const showSignupOptions = document.getElementById('showSignupOptions');
+const backToLoginLinks = document.querySelectorAll('#backToLogin');
 
+// Function to reset all forms
+function resetForms() {
+    loginForm.style.display = 'none';
+    signupOptions.style.display = 'none';
+    signupAdmin.style.display = 'none';
+    signupCollector.style.display = 'none';
+    signupAgent.style.display = 'none';
+}
 
-// Switch to Signup
-switchToSignup.addEventListener('click', (e) => {
+// Show login form by default
+loginForm.style.display = 'block';
+
+// Show sign-up options when "Sign Up here" is clicked
+showSignupOptions.addEventListener('click', (e) => {
     e.preventDefault();
-    loginForm.classList.remove('active');
-    signupForm.classList.add('active');
-    // signupForm.classList.add('active');
-
+    resetForms();
+    signupOptions.style.display = 'block';
 });
 
-// Switch to Login
-switchToLogin.addEventListener('click', (e) => {
+// Show Admin signup form
+document.getElementById('signupAdmin').addEventListener('click', (e) => {
     e.preventDefault();
-    signupForm.classList.remove('active');
-    loginForm.classList.add('active');
+    resetForms();
+    signupAdmin.style.display = 'block';
 });
 
-// Initialize default view
-loginForm.classList.add('active');
-// signupForm.classList.remove('active');
-// signupOption.classList.remove('active');
+// Show Collector signup form
+document.getElementById('signupCollector').addEventListener('click', (e) => {
+    e.preventDefault();
+    resetForms();
+    signupCollector.style.display = 'block';
+});
 
+// Show Agent signup form
+document.getElementById('signupAgent').addEventListener('click', (e) => {
+    e.preventDefault();
+    resetForms();
+    signupAgent.style.display = 'block';
+});
+
+// Go back to login form when "Login" is clicked
+backToLoginLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetForms();
+        loginForm.style.display = 'block';
+    });
+});

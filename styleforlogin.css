@@ -33,8 +33,8 @@ body {
 }
 
 .form-wrapper {
-    display: none;
-    width: 100%;
+    /* display: none; */
+    /* width: 100%; */
 }
 
 .form-wrapper.active {

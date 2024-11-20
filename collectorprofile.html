@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collector Profile</title>
     <link rel="stylesheet" href="collector.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Collector Profile Section -->
@@ -13,12 +15,12 @@
             <h2>Collector Profile</h2>
             <div class="profile-content">
                 <!-- Profile Photo Upload -->
-                <div class="photo-section">
+                <!-- <div class="photo-section">
                     <img id="profile-photo" src="default-profile.png" alt="Collector Photo">
                     <input type="file" id="upload-photo" style="display: none;">
                     <button id="add-photo-btn">Add Photo</button>
-                </div>
-                
+                </div> -->
+
                 <!-- Collector Information -->
                 <div class="collector-info">
                     <h3 id="collector-name">Welcome, [Collector Name]</h3>
@@ -53,7 +55,7 @@
         const addPhotoBtn = document.getElementById('add-photo-btn');
         const uploadPhoto = document.getElementById('upload-photo');
         const profilePhoto = document.getElementById('profile-photo');
-        
+
         addPhotoBtn.addEventListener('click', () => {
             uploadPhoto.click();
         });
@@ -61,7 +63,7 @@
         uploadPhoto.addEventListener('change', (event) => {
             const file = event.target.files[0];
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 profilePhoto.src = e.target.result;
             };
             reader.readAsDataURL(file);
@@ -83,7 +85,7 @@
             if (plasticAmount > 0) {
                 // In real implementation, you would send the data to the server and wait for the agent's acceptance
                 alert(`You submitted ${plasticAmount}kg to ${agent}.`);
-                
+
                 // For this example, simulate agent acceptance by updating reward points
                 points += parseFloat(plasticAmount) * 10;  // Example: 10 points per kg
                 rewardPoints.textContent = `Rewards: ${points} Points`;
@@ -92,5 +94,10 @@
             }
         });
     </script>
+
+
+    <script src="script.js"></script>
+    <script src="Express.js"></script>
 </body>
+
 </html>

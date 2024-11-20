@@ -30,81 +30,45 @@
             </div>
 
 
-            <script src="server.js"></script>
+         
 
-
+            
             <script>
-                document.getElementById('loginForm').addEventListener('submit', async (event) => {
-                    event.preventDefault(); // ফর্ম সাবমিট না করতে দেওয়া
-                
-                    const email = document.getElementById('email').value;
-                    const password = document.getElementById('password').value;
-                
-                    try {
-                        // POST রিকোয়েস্ট পাঠানো
-                        const response = await fetch('http://localhost:5501/login', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ email, password }),
-                        });
-                
-                        const data = await response.json();
-                
-                        if (response.status === 200) {
-                            console.log('Login successful', data);
-                            // লগিন সফল হলে আপনি এখানে পরবর্তী একশন নিতে পারেন (যেমন, রিডাইরেক্ট)
-                        } else {
-                            console.error(data.message);
-                            alert(data.message); // মেসেজ দেখানো
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Login failed. Please try again.');
-                    }
+         document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+
+            try {
+                const response = await fetch('http://localhost:5501/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
                 });
-                </script>
 
+                const result = await response.json();
 
-
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
+                if (response.ok) {
+                    alert(result.message); // Show login success message
+                    // Redirect to profile page (you can pass user ID or other details)
+                    localStorage.setItem('user', JSON.stringify(result.user)); // Save user info
+                    window.location.href = 'profile.html'; // Navigate to profile
+                } else {
+                    alert(result.message); // Show error message
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+        });
+    </script>
 
 
 

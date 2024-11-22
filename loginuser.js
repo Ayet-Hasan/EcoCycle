@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.status === "success") {
                     alert(`Welcome ${result.name}`);
                     localStorage.setItem('user', JSON.stringify({ name: result.name }));
+                    console.log('Redirecting to profile page...');
                     window.location.href = 'collectorprofile.html';
                 } else {
                     alert(result.message);

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collector Profile</title>
+    <link rel="stylesheet" href="collector.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Collector Profile Section -->
+        <div class="profile-wrapper">
+            <h2>Collector Profile</h2>
+            <div class="profile-content">
+                
+
+                <!-- Collector Information -->
+                <div class="collector-info">
+                
+                    <h3 id="collector-name">Welcome, [Collector Name]</h3>
+                </div>
+
+                <!-- Agent List and Plastic Submission Form -->
+                <div class="agent-selection">
+                    <h4>Select Agent to Submit Plastic</h4>
+                    <select id="agent-list">
+                        <option value="agent1">Agent 1</option>
+                        <option value="agent2">Agent 2</option>
+                        <option value="agent3">Agent 3</option>
+                    </select>
+
+                    <label for="plastic-amount">Amount of Plastic (kg):</label>
+                    <input type="number" id="plastic-amount" placeholder="Enter amount" min="0" step="0.1">
+
+                    <button id="submit-plastic-btn">Submit to Agent</button>
+                </div>
+
+                <!-- Reward Section -->
+                <div class="reward-section">
+                    <h4>Rewards</h4>
+                    <p id="reward-points">Rewards: 0 Points</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+       // // Example of displaying collector's name from sign-up data (replace with actual data)
+        const collectorName = "John Doe";  // This would be dynamically set
+        document.getElementById('collector-name').textContent = `Welcome, ${collectorName}`;
+
+        // Submit Plastic to Agent and Reward Update
+        const submitPlasticBtn = document.getElementById('submit-plastic-btn');
+        const rewardPoints = document.getElementById('reward-points');
+        let points = 0;
+
+        submitPlasticBtn.addEventListener('click', () => {
+            const plasticAmount = document.getElementById('plastic-amount').value;
+            const agent = document.getElementById('agent-list').value;
+
+            if (plasticAmount > 0) {
+                // In real implementation, you would send the data to the server and wait for the agent's acceptance
+                alert(`You submitted ${plasticAmount}kg to ${agent}.`);
+
+                // For this example, simulate agent acceptance by updating reward points
+                points += parseFloat(plasticAmount) * 10;  // Example: 10 points per kg
+                rewardPoints.textContent = `Rewards: ${points} Points`;
+            } else {
+                alert("Please enter a valid amount of plastic.");
+            }
+        });
+
+
+
+        const fetchName= async () => {
+            let data ;
+            try {
+                const res= await fetch("http://localhost:5501/collectorprofile");
+                data = await res.json();
+                console.log(data);
+                showName(data);
+            }
+            catch (err){
+                console.log("error fetching data from server: ");
+            }
+
+        };
+
+        const showName= (allName ) =>{
+            document.getElementById('collector-name').textContent = `Welcome, ${collectorName}`;
+                
+           
+        }
+
+
+        fetchName();
+
+
+
+    </script>
+
+
+   
+ 
+  </body>
+
+</html>

@@ -14,13 +14,6 @@
         <div class="profile-wrapper">
             <h2>Collector Profile</h2>
             <div class="profile-content">
-                <!-- Profile Photo Upload -->
-                <!-- <div class="photo-section">
-                    <img id="profile-photo" src="default-profile.png" alt="Collector Photo">
-                    <input type="file" id="upload-photo" style="display: none;">
-                    <button id="add-photo-btn">Add Photo</button>
-                </div> -->
-
                 <!-- Collector Information -->
                 <div class="collector-info">
                     <h3 id="collector-name">Welcome, [Collector Name]</h3>
@@ -30,9 +23,7 @@
                 <div class="agent-selection">
                     <h4>Select Agent to Submit Plastic</h4>
                     <select id="agent-list">
-                        <option value="agent1">Agent 1</option>
-                        <option value="agent2">Agent 2</option>
-                        <option value="agent3">Agent 3</option>
+                        <!-- Agent list will be dynamically populated -->
                     </select>
 
                     <label for="plastic-amount">Amount of Plastic (kg):</label>
@@ -51,53 +42,109 @@
     </div>
 
     <script>
-        // Profile Photo Upload
-        const addPhotoBtn = document.getElementById('add-photo-btn');
-        const uploadPhoto = document.getElementById('upload-photo');
-        const profilePhoto = document.getElementById('profile-photo');
+        // Fetching user data from localStorage (after login)
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            console.log(user);
+            // if (!user || !user.email) {
+            //     alert('You are not logged in!');
+            //     window.location.href = 'login.html'; // Redirect to login page
+            //     return;
+            // }
 
-        addPhotoBtn.addEventListener('click', () => {
-            uploadPhoto.click();
-        });
+            // const collectorEmail = user.email;
+            document.getElementById('collector-name').textContent = `Welcome, ${user.name}`;
 
-        uploadPhoto.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                profilePhoto.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
+    //         try {
+    //     // Fetch user data from the server using email
+    //     const response = await fetch('http://localhost:5501/getLoggedInUser', {
+    //         method: 'GET',
+    //         credentials: 'include', // Include session cookies
+    //     });
 
-        // Example of displaying collector's name from sign-up data (replace with actual data)
-        const collectorName = "John Doe";  // This would be dynamically set
-        document.getElementById('collector-name').textContent = `Welcome, ${collectorName}`;
+    //     if (!response.ok) {
+    //         throw new Error('Failed to fetch user data. Please log in again.');
+    //     }
 
-        // Submit Plastic to Agent and Reward Update
-        const submitPlasticBtn = document.getElementById('submit-plastic-btn');
-        const rewardPoints = document.getElementById('reward-points');
-        let points = 0;
+    //     const user = await response.json();
 
-        submitPlasticBtn.addEventListener('click', () => {
-            const plasticAmount = document.getElementById('plastic-amount').value;
-            const agent = document.getElementById('agent-list').value;
+    //     if (!user || !user.email) {
+    //         alert('You are not logged in!');
+    //         window.location.href = 'login.html'; // Redirect to login page
+    //         return;
+    //     }
 
-            if (plasticAmount > 0) {
-                // In real implementation, you would send the data to the server and wait for the agent's acceptance
-                alert(`You submitted ${plasticAmount}kg to ${agent}.`);
+    //     // Display the collector's name
+    //     document.getElementById('collector-name').textContent = `Welcome, ${user.name}`;
+    // } catch (error) {
+    //     console.error('Error fetching user data:', error);
+    //     alert('An error occurred. Please log in again.');
+    //     window.location.href = 'login.html'; // Redirect to login page
+    // }
 
-                // For this example, simulate agent acceptance by updating reward points
-                points += parseFloat(plasticAmount) * 10;  // Example: 10 points per kg
-                rewardPoints.textContent = `Rewards: ${points} Points`;
-            } else {
-                alert("Please enter a valid amount of plastic.");
+            try {
+                // Fetching agent list
+                const agentResponse = await fetch('http://localhost:5501/agents');
+                if (!agentResponse.ok) {
+                    throw new Error('Failed to fetch agents');
+                }
+
+                const agentData = await agentResponse.json();
+                const agentList = document.getElementById('agent-list');
+
+                agentData.agents.forEach(agent => {
+                    const option = document.createElement('option');
+                    option.value = agent.id;
+                    option.textContent = agent.name;
+                    agentList.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching agents:', error);
+                alert('Error loading agents. Please try again.');
             }
+
+            // Handle Plastic Submission
+            const submitPlasticBtn = document.getElementById('submit-plastic-btn');
+            const rewardPoints = document.getElementById('reward-points');
+            let points = 0;
+
+            submitPlasticBtn.addEventListener('click', async () => {
+                const plasticAmount = document.getElementById('plastic-amount').value;
+                const agentId = document.getElementById('agent-list').value;
+
+                if (plasticAmount > 0 && agentId) {
+                    try {
+                        const response = await fetch('http://localhost:5501/submitPlastic', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                collectorId,
+                                agentId,
+                                plasticAmount
+                            }),
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to submit plastic');
+                        }
+
+                        const result = await response.json();
+                        alert(`Plastic submitted to Agent. Reward Points: ${result.rewardPoints}`);
+                        points += result.rewardPoints;
+                        rewardPoints.textContent = `Rewards: ${points} Points`;
+
+                    } catch (error) {
+                        console.error('Error submitting plastic:', error);
+                        alert('Error submitting plastic. Please try again.');
+                    }
+                } else {
+                    alert('Please enter valid data.');
+                }
+            });
         });
     </script>
-
-
-    <script src="script.js"></script>
-    <script src="Express.js"></script>
 </body>
 
 </html>

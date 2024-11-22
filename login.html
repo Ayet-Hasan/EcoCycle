@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Sign Up</title>
+    <title>Login</title>
     <link rel="stylesheet" href="styleforlogin.css">
 </head>
 <body>
@@ -14,16 +14,16 @@
                 <h2>Login</h2>
                 <form id="loginForm">
                     <input type="email" id="email" placeholder="Email" required>
-                    <input type="password" id="Password" placeholder="Password" required>
+                    <input type="password" id="password" placeholder="Password" required>
 
-
+<!-- 
                     <select id="role" required>
                         <option value="">Select Role</option>
                         <option value="collector">Collector</option>
                         <option value="agent">Agent</option>
-                    </select>
+                    </select> -->
 
-                    <a href="collectorprofile.html"> <button type="submit" class="btn">Login</button></a>
+                     <button type="submit" class="btn">Login</button>
                    
                     <p>Don't have an account? <a href="signupoption.html" id="showSignupOptions">Sign Up here</a></p>
                 </form>
@@ -31,46 +31,9 @@
 
 
          
-
+<script src="loginuser.js"></script>
             
-            <script>
-         document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-
-
-            try {
-                const response = await fetch('http://localhost:5501/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password }),
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert(result.message); // Show login success message
-                    // Redirect to profile page (you can pass user ID or other details)
-                    localStorage.setItem('user', JSON.stringify(result.user)); // Save user info
-                    window.location.href = 'profile.html'; // Navigate to profile
-                } else {
-                    alert(result.message); // Show error message
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
-        });
-    </script>
-
-
+   
 
         
 </body>

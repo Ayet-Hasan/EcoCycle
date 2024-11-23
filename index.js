@@ -190,6 +190,86 @@ app.post("/registerCollector", (req, res) => {
 });
 
 
+//// register api for agent 
+
+
+
+// Handle register collector POST request
+app.post("/registerAgent", (req, res) => {
+    const { name, email, password } = req.body;
+    console.log("Received data:", { name, email, password });
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const query = "INSERT INTO agent (name, email, password) VALUES (?, ?, ?)";
+    db.query(query, [name, email, password], (err, result) => {
+        if (err) {
+            console.error("Database Error:", err);
+            return res.status(500).json({ message: "Failed to register collector." });
+        }
+        res.status(201).json({ message: "Collector registered successfully!", id: result.insertId });
+    });
+});
+
+
+
+/////login api for agent     ///
+
+
+
+/// Login route
+app.post('/agentLogin', (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required.' });
+    }
+
+    const query = 'SELECT * FROM agent WHERE email = ?';
+    db.query(query, [email], (err, results) => {
+        if (err) {
+            console.error('Database Error:', err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = results[0];
+
+        if (user.password === password) {
+
+               // Save user email and name in session
+            //    req.session.user = { email: user.email, name: user.name };
+               console.log('Session Set:', req.session.user);
+               req.session.user = { email: user.email, name: user.name };
+
+           res.status(200).json({
+                message: 'Login successful',
+
+                status: 'success',
+                    name: user.name,
+                    
+                     // Store the complete user object in localStorage
+
+                    user: req.session.user,
+                // user: {  name: user.name, email: user.email },
+
+                
+                
+                
+            });
+        } else {
+            res.status(401).json({ message: 'Incorrect password' });
+        }
+    });
+});
+
+
+
 
 
 

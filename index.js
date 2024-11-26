@@ -4,6 +4,8 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
+const { Server } = require("socket.io");
+const http = require("http");
 
 const session = require('express-session');
 
@@ -15,11 +17,20 @@ app.use(session({
     secret: 'my_super_secret_key_123!@#$%_random_text',
     resave: false,
     saveUninitialized: true,
-    cookie: {
-        secure: false, // HTTPS ছাড়া চলার জন্য
-        httpOnly: true, // কুকি শুধুমাত্র সার্ভার থেকে অ্যাক্সেসযোগ্য হবে
-    }
+  
 }));
+
+const server = http.createServer(app);
+
+
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://127.0.0.1:5501", // Your frontend URL
+        methods: ["GET", "POST"],
+    },
+});
+
 
 
 
@@ -72,8 +83,7 @@ app.post('/login', (req, res) => {
 
         if (user.password === password) {
 
-               // Save user email and name in session
-            //    req.session.user = { email: user.email, name: user.name };
+            //    Save user email and name in session
                console.log('Session Set:', req.session.user);
                req.session.user = { email: user.email, name: user.name };
 
@@ -82,6 +92,7 @@ app.post('/login', (req, res) => {
 
                 status: 'success',
                     name: user.name,
+                   
                     
                      // Store the complete user object in localStorage
 
@@ -99,29 +110,6 @@ app.post('/login', (req, res) => {
 });
 
 
-///// for colector profile get name ;;;
-
-// Route to get logged-in user's data
-// Route to get logged-in user's data
-
-// app.get('/getLoggedInUser', (req, res) => {
-//     // Assuming user info is stored in session
-//     if (req.session && req.session.user) {
-//         res.json({
-//             email: req.session.user.email,
-//             name: req.session.user.name
-            
-//         }); // Send email and name from session
-//     } else {
-//         res.status(401).json({ message: 'Not logged in' });
-//     }
-// });
-
-
-
-// } );
-
-//////
 
 
 
@@ -137,36 +125,86 @@ app.get('/agents', (req, res) => {
     });
 });
 
-// Submit Plastic Route (to an agent)
-app.post('/submitPlastic', (req, res) => {
+//
+//
+
+// Plastic Submission Route
+app.post("/submitPlastic", (req, res) => {
     const { collectorId, agentId, plasticAmount } = req.body;
 
     if (!collectorId || !agentId || !plasticAmount) {
-        return res.status(400).json({ message: 'Collector ID, Agent ID, and Plastic Amount are required.' });
+        return res.status(400).json({ message: "Invalid Data" });
     }
 
-    // Store the plastic submission request (you can add more logic like checking agent's availability)
-    const query = 'INSERT INTO submissions (collector_id, agent_id, amount) VALUES (?, ?, ?)';
+    const query = "INSERT INTO submitplastic  (collectorId, agentId, plasticAmount, status) VALUES (?, ?, ?, 'pending')";
     db.query(query, [collectorId, agentId, plasticAmount], (err, result) => {
         if (err) {
-            console.error('Database Error:', err);
-            return res.status(500).json({ message: 'Failed to submit plastic.' });
+            console.error("Database Error:", err);
+            return res.status(500).json({ message: "submit failed" });
         }
 
-        // Calculate reward (for simplicity, let's assume 10 points per kg)
-        const rewardPoints = parseFloat(plasticAmount) * 10;
+        
 
-        res.status(200).json({
-            message: 'Plastic submitted successfully!',
-            rewardPoints: rewardPoints
-        });
+        res.status(200).json({ message: "Submission successful!" });
     });
 });
 
 
+///// response submision
+app.post('/respondSubmission', async (req, res) => {
+    try {
+        const { submissionId, action } = req.body;
+
+        if (!submissionId || !action) {
+            return res.status(400).json({ message: 'Invalid data' });
+        }
+
+        if (action === 'accept') {
+            const rewardQuery = `
+                UPDATE collector 
+                INNER JOIN submitplastic ON collector.id = submitplastic.collectorId
+                SET collector.rewards = collector.rewards + (submitplastic.plasticAmount * 10)
+                WHERE submitplastic.id = ?
+            `;
+            await dbQuery(rewardQuery, [submissionId]);
+        }
+
+        res.status(200).json({ message: `Action ${action} performed successfully` });
+    } catch (error) {
+        console.error('Error handling submission response:', error);
+        res.status(500).json({ message: 'Database error' });
+    }
+});
 
 
-///////
+
+/////
+
+
+app.get('/agentSubmissions', (req, res) => {
+    const { agentId } = req.query; // ক্লায়েন্ট থেকে এজেন্টের ID নিন
+
+    if (!agentId) {
+        return res.status(400).json({ message: 'Agent ID is required.' });
+    }
+
+    const query = 'SELECT * FROM submitplastic WHERE agentId = ?';
+    db.query(query, [agentId], (err, results) => {
+        if (err) {
+            console.error("Database Error:", err);
+            return res.status(500).json({ message: 'Database error' });
+        }
+
+        // যদি কোনও ডেটা না থাকে
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No submissions found for this agent.' });
+        }
+
+        res.status(200).json({ submissions: results }); // সাবমিশন ডেটা রিটার্ন করুন
+    });
+});
+
+
 
 
 
@@ -243,20 +281,21 @@ app.post('/agentLogin', (req, res) => {
         if (user.password === password) {
 
                // Save user email and name in session
-            //    req.session.user = { email: user.email, name: user.name };
+               req.session.user = { id:user.id,  email: user.email, name: user.name };
                console.log('Session Set:', req.session.user);
-               req.session.user = { email: user.email, name: user.name };
-
+           
            res.status(200).json({
                 message: 'Login successful',
 
                 status: 'success',
                     name: user.name,
-                    
+                    email:user.email,
+                    id :user.id,
+                 
                      // Store the complete user object in localStorage
 
-                    user: req.session.user,
-                // user: {  name: user.name, email: user.email },
+                    // user: req.session.user,
+                user: { id:user.id, name: user.name, email: user.email },
 
                 
                 

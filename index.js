@@ -306,6 +306,8 @@ app.post('/agentLogin', (req, res) => {
                 message: 'Login successful',
                 status: 'success',
                 name: user.name,
+                email:user.email,
+                id:user.id,
                 user: req.session.user,
             });
         } else {

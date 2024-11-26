@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,11 +10,11 @@
 
 <body>
     <div class="container">
-        <!-- Collector Profile Section -->
+      // Collector Profile Section 
         <div class="profile-wrapper">
             <h2>Agent Profile</h2>
             <div class="profile-content">
-                <!-- Collector Information -->
+            // Collector Information 
                 <div class="collector-info">
                     <h3 id="collector-name">Welcome, [Collector Name]</h3>
                 </div>
@@ -30,219 +30,270 @@
                         </tr>
                     </thead>
                     <tbody id="submissionTableBody">
-                        <!-- এখানে ডেটা অ্যাড হবে -->
+
+
                     </tbody>
                 </table>
-              
+
 
             </div>
         </div>
     </div>
 
 
-    
+
 
     <script>
         // Fetching user data from localStorage (after login)
         document.addEventListener('DOMContentLoaded', async () => {
             const user = JSON.parse(localStorage.getItem('user'));
-             
-
-           document.getElementById('collector-name').textContent = `Welcome, ${user.name}`;
 
 
-           //  
-//agent submission 
+            document.getElementById('collector-name').textContent = `Welcome, ${user.name}`;
 
 
-    const agentId = user.id; // এজেন্ট ID (ডাইনামিক্যালি সেট করো)
-    fetch(`http://localhost:5501/agentSubmissions?agentId=${agentId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.submissions) {
-                const tableBody = document.getElementById("submissionTableBody");
-                tableBody.innerHTML = data.submissions
-                    .map(sub => `
+            //  
+            //agent submission 
+
+
+            const agentId = user.id;
+            fetch(`http://localhost:5501/agentSubmissions?agentId=${agentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.submissions) {
+                        const tableBody = document.getElementById("submissionTableBody");
+                        tableBody.innerHTML = data.submissions
+                            .map(sub => `
                         <tr>
                             <td>${sub.id}</td>
                             <td>${sub.collectorId}</td>
                             <td>${sub.plasticAmount}</td>
                             <td>${sub.status}</td>
+                            <td>
+                         <button onclick="acceptSubmission(${sub.id})">Accept</button>
+                         <button onclick="deleteSubmission(${sub.id})">Delete</button>
+                       
+                           </td>
                         </tr>
                     `).join("");
-            } else {
-                console.log(data.message);
+                    } else {
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => console.error("Error fetching submissions:", error));
+
+
+
+
+            function acceptSubmission(submissionId) {
+                fetch("http://localhost:5501/acceptSubmission", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ submissionId }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        // টেবিল আপডেট করুন
+                        fetchSubmissions();
+                    })
+                    .catch(error => console.error("Error accepting submission:", error));
             }
-        })
-        .catch(error => console.error("Error fetching submissions:", error));
 
 
-    ///////////////////
+            ////deletel submission
 
-    ////////
-    function handleResponse(submissionId, action) {
-    fetch('http://localhost:5501/respondSubmission', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ submissionId, action })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data.message); // রেসপন্স দেখান
-        // সাবমিশন লিস্ট রিফ্রেশ করুন
-    })
-    .catch(error => console.error('Error handling response:', error));
-}
+            // function deleteSubmission(submissionId) {
+            //     fetch(`http://localhost:5501/deleteSubmission/${submissionId}`, {
+            //         method: "DELETE",
+            //     })
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             alert(data.message);
+            //             // টেবিল আপডেট করুন
+            //             fetchSubmissions();
+            //         })
+            //         .catch(error => console.error("Error deleting submission:", error));
+            // }
 
-  
+            function deleteSubmission(id) {
+                fetch(`http://localhost:5501/deleteSubmission?id=${id}`, { // Pass as query string
+                    method: "DELETE",
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        fetchSubmissions(); // Refresh the table
+                    })
+                    .catch(error => console.error("Error deleting submission:", error));
+            }
 
-
-
-function renderTable(submissions) {
-        const table = document.getElementById('submissionTable'); // Assuming a table with this ID exists
-        table.innerHTML = ''; // Clear previous data
-    
-        submissions.forEach(submission => {
-            const row = document.createElement('tr');
-    
-            row.innerHTML = `
-                <td>${submission.id}</td>
-                <td>${submission.collectorName}</td>
-                <td>${submission.plasticAmount}</td>
-                <td>
-                    <button onclick="acceptSubmission(${submission.id})">Accept</button>
-                    <button onclick="cancelSubmission(${submission.id})">Cancel</button>
-                </td>
-            `;
-    
-            table.appendChild(row);
-        });
-
-    }
-
-    renderTable(submissions); ///////////
-
-
-// // Respond to submission
-// async function respondToSubmission(submissionId, action) {
-//     const response = await fetch("http://localhost:5501/respondSubmission", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ submissionId, action }),
-//     });
-
-//     if (response.ok) {
-//         alert(`Submission ${action}ed successfully!`);
-//     } else {
-//         alert("Failed to respond to submission.");
-//     }
-// }
-
-
-
-
-            
 
 
         });
     </script>
 
 
-<!-- 
-<script>
-    function renderTable(submissions) {
-        const table = document.getElementById('submissionTable'); // Assuming a table with this ID exists
-        table.innerHTML = ''; // Clear previous data
-    
-        submissions.forEach(submission => {
-            const row = document.createElement('tr');
-    
-            row.innerHTML = `
-                <td>${submission.id}</td>
-                <td>${submission.collectorName}</td>
-                <td>${submission.plasticAmount}</td>
-                <td>
-                    <button onclick="acceptSubmission(${submission.id})">Accept</button>
-                    <button onclick="cancelSubmission(${submission.id})">Cancel</button>
-                </td>
-            `;
-    
-            table.appendChild(row);
-        });
-
-    }
-
-    renderTable(submissions);
-    </script>  -->
-
-
-
-
-
-
-
-
-
-
-
-
-
 </body>
 
-</html>
+</html> -->
 
 
 
 
 
-<!-- 
+
+
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agent Profile</title>
-    <script src="agentProfile.js" defer></script>
+    <link rel="stylesheet" href="collector.css">
 </head>
+
 <body>
-    <h1>Agent Profile</h1>
-    <table border="1" id="submissionsTable">
-        <thead>
-            <tr>
-                <th>Submission ID</th>
-                <th>Collector Name</th>
-                <th>Plastic Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            //// Rows will be dynamically added
-        </tbody>
-    </table>
+    <div class="container">
+        <div class="profile-wrapper">
+            <h2>Agent Profile</h2>
+            <div class="profile-content">
+                <div class="collector-info">
+                    <h3 id="collector-name">Welcome, [Agent Name]</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Submission ID</th>
+                            <th>Collector ID</th>
+                            <th>Plastic Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            document.getElementById('collector-name').textContent = `Welcome, ${user.name}`;
+
+            const agentId = user.id;
+
+            // Fetch submissions for the agent
+            fetch(`http://localhost:5501/agentSubmissions?agentId=${agentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.submissions) {
+                        const tableBody = document.getElementById("submissionTableBody");
+                        tableBody.innerHTML = data.submissions
+                            .map(sub => `
+                        <tr>
+                            <td>${sub.id}</td>
+                            <td>${sub.collectorId}</td>
+                            <td>${sub.plasticAmount}</td>
+                            <td>${sub.status}</td>
+                            <td>
+                                <button onclick="acceptSubmission(${sub.id})">Accept</button>
+                                <button onclick="deleteSubmission(${sub.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `).join("");
+                    } else {
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => console.error("Error fetching submissions:", error));
+
+            // Function to accept a submission
+            window.acceptSubmission = function (submissionId) {
+                fetch("http://localhost:5501/acceptSubmission", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ submissionId }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        refreshTable();
+                    })
+                    .catch(error => console.error("Error accepting submission:", error));
+            };
+
+
+            ///
+            // Function to accept a submission
+window.acceptSubmission = function (submissionId) {  // Fixed typo here
+    fetch("http://localhost:5501/acceptSubmission", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ submissionId })
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            refreshTable();  // You can define this function to reload the table of submissions
+        })
+        .catch(error => {
+            console.error("Error accepting submission:", error);
+            alert("There was an error processing the submission.");
+        });
+};
+
+
+
+            // Function to delete a submission
+            window.deleteSubmission = function (id) {
+                fetch(`http://localhost:5501/deleteSubmission?id=${id}`, {
+                    method: "DELETE",
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        refreshTable();
+                    })
+                    .catch(error => console.error("Error deleting submission:", error));
+            };
+
+            // Refresh table data
+            function refreshTable() {
+                fetch(`http://localhost:5501/agentSubmissions?agentId=${agentId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.submissions) {
+                            const tableBody = document.getElementById("submissionTableBody");
+                            tableBody.innerHTML = data.submissions
+                                .map(sub => `
+                                <tr>
+                                    <td>${sub.id}</td>
+                                    <td>${sub.collectorId}</td>
+                                    <td>${sub.plasticAmount}</td>
+                                    <td>${sub.status}</td>
+                                    <td>
+                                        <button onclick="acceptSubmission(${sub.id})">Accept</button>
+                                        <button onclick="deleteSubmission(${sub.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `).join("");
+                        }
+                    })
+                    .catch(error => console.error("Error refreshing table:", error));
+            }
+        });
+    </script>
 </body>
+
 </html>
-<script>
-function renderTable(submissions) {
-    const table = document.getElementById('submissionTable'); // Assuming a table with this ID exists
-    table.innerHTML = ''; // Clear previous data
-
-    submissions.forEach(submission => {
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>${submission.id}</td>
-            <td>${submission.collectorName}</td>
-            <td>${submission.plasticAmount}</td>
-            <td>
-                <button onclick="acceptSubmission(${submission.id})">Accept</button>
-                <button onclick="cancelSubmission(${submission.id})">Cancel</button>
-            </td>
-        `;
-
-        table.appendChild(row);
-    });
-}
-</script> -->

@@ -1,14 +1,387 @@
 
 
 
+// const express = require("express");
+// const mysql = require("mysql");
+// const cors = require("cors");
+// const { Server } = require("socket.io");
+// const http = require("http");
+
+// const session = require('express-session');
+
+
+// const app = express();
+// const port = 5501;
+
+// app.use(session({
+//     secret: 'my_super_secret_key_123!@#$%_random_text',
+//     resave: false,
+//     saveUninitialized: true,
+  
+// }));
+
+// const server = http.createServer(app);
+
+
+
+// const io = new Server(server, {
+//     cors: {
+//         origin: "http://127.0.0.1:5501", // Your frontend URL
+//         methods: ["GET", "POST"],
+//     },
+// });
+
+
+
+
+// // Middleware
+// app.use(cors({
+//     origin: 'http://127.0.0.1:5501' // Your frontend URL (adjust if necessary)
+// }));
+// app.use(express.json()); // Built-in Express JSON parser
+
+// // MySQL connection setup
+// const db = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "",
+//     database: "ecocycle"
+// });
+
+// // Test MySQL connection
+// db.connect(err => {
+//     if (err) {
+//         console.error("Connection Error:", err);
+//         process.exit(1); // Stop the app if connection fails
+//     } else {
+//         console.log("Connected to the MySQL database.");
+//     }
+// });
+
+
+
+// /// Login route
+// app.post('/login', (req, res) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return res.status(400).json({ message: 'Email and password are required.' });
+//     }
+
+//     const query = 'SELECT * FROM collector WHERE email = ?';
+//     db.query(query, [email], (err, results) => {
+//         if (err) {
+//             console.error('Database Error:', err);
+//             return res.status(500).json({ message: 'Database error' });
+//         }
+
+//         if (results.length === 0) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         const user = results[0];
+
+//         if (user.password === password) {
+
+//             //    Save user email and name in session
+//                console.log('Session Set:', req.session.user);
+//                req.session.user = { email: user.email, name: user.name };
+
+//            res.status(200).json({
+//                 message: 'Login successful',
+
+//                 status: 'success',
+//                     name: user.name,
+                   
+                    
+//                      // Store the complete user object in localStorage
+
+//                     user: req.session.user,
+//                 // user: {  name: user.name, email: user.email },
+
+                
+                
+                
+//             });
+//         } else {
+//             res.status(401).json({ message: 'Incorrect password' });
+//         }
+//     });
+// });
+
+
+
+
+
+// // Get Agent List Route
+// app.get('/agents', (req, res) => {
+//     const query = 'SELECT id, name FROM agent';
+//     db.query(query, (err, results) => {
+//         if (err) {
+//             console.error('Database Error:', err);
+//             return res.status(500).json({ message: 'Database error' });
+//         }
+//         res.status(200).json({ agents: results });
+//     });
+// });
+
+// //
+// //
+
+// // Plastic Submission Route
+// app.post("/submitPlastic", (req, res) => {
+//     const { collectorId, agentId, plasticAmount } = req.body;
+
+//     if (!collectorId || !agentId || !plasticAmount) {
+//         return res.status(400).json({ message: "Invalid Data" });
+//     }
+
+//     const query = "INSERT INTO submitplastic  (collectorId, agentId, plasticAmount, status) VALUES (?, ?, ?, 'pending')";
+//     db.query(query, [collectorId, agentId, plasticAmount], (err, result) => {
+//         if (err) {
+//             console.error("Database Error:", err);
+//             return res.status(500).json({ message: "submit failed" });
+//         }
+
+        
+
+//         res.status(200).json({ message: "Submission successful!" });
+//     });
+// });
+
+// app.post('/acceptSubmission', (req, res) => {
+//     const { submissionId } = req.body;
+
+//     if (!submissionId) {
+//         return res.status(400).json({ message: "Submission ID is required." });
+//     }
+
+//     const updateQuery = `
+//         UPDATE submitplastic
+//         SET status = 'accepted'
+//         WHERE id = ?;
+//     `;
+
+//     const rewardQuery = `
+//         UPDATE collector
+//         INNER JOIN submitplastic ON collector.id = submitplastic.collectorId
+//         SET collector.rewards = collector.rewards + (submitplastic.plasticAmount * 10)
+//         WHERE submitplastic.id = ?;
+//     `;
+
+//     db.query(updateQuery, [submissionId], (err) => {
+//         if (err) {
+//             console.error("Database Error (Accept):", err);
+//             return res.status(500).json({ message: "Failed to accept submission." });
+//         }
+
+//         db.query(rewardQuery, [submissionId], (err) => {
+//             if (err) {
+//                 console.error("Database Error (Reward):", err);
+//                 return res.status(500).json({ message: "Failed to update rewards." });
+//             }
+
+//             res.status(200).json({ message: "Submission accepted and rewards updated!" });
+//         });
+//     });
+// });
+
+
+// /////
+
+// //         res.status(200).json({ message: "Submission deleted successfully!" });
+// //     });
+// // });
+
+// app.delete('/deleteSubmission', (req, res) => {
+//     const { id } = req.query; // Extract from query string
+
+//     if (!id) {
+//         console.error("No ID provided for deletion.");
+//         return res.status(400).json({ message: "Submission ID is required." });
+//     }
+
+//     console.log("Attempting to delete submission with ID:", id);
+
+//     const deleteQuery = `
+//         DELETE FROM submitplastic
+//         WHERE id = ?;
+//     `;
+
+//     db.query(deleteQuery, [id], (err, result) => {
+//         if (err) {
+//             console.error("Database Error (Delete):", err);
+//             return res.status(500).json({ message: "Failed to delete submission." });
+//         }
+
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ message: "No submission found with this ID." });
+//         }
+
+//         console.log("Submission deleted successfully with ID:", id);
+//         res.status(200).json({ message: "Submission deleted successfully!" });
+//     });
+// });
+
+
+
+
+
+// /////
+
+
+// app.get('/agentSubmissions', (req, res) => {
+//     const { agentId } = req.query; // ক্লায়েন্ট থেকে এজেন্টের ID নিন
+
+//     if (!agentId) {
+//         return res.status(400).json({ message: 'Agent ID is required.' });
+//     }
+
+//     const query = 'SELECT * FROM submitplastic WHERE agentId = ?';
+//     db.query(query, [agentId], (err, results) => {
+//         if (err) {
+//             console.error("Database Error:", err);
+//             return res.status(500).json({ message: 'Database error' });
+//         }
+
+//         // যদি কোনও ডেটা না থাকে
+//         if (results.length === 0) {
+//             return res.status(404).json({ message: 'No submissions found for this agent.' });
+//         }
+
+//         res.status(200).json({ submissions: results }); // সাবমিশন ডেটা রিটার্ন করুন
+//     });
+// });
+
+
+
+
+
+// // Handle register collector POST request
+// app.post("/registerCollector", (req, res) => {
+//     const { name, email, password } = req.body;
+//     console.log("Received data:", { name, email, password });
+
+//     if (!name || !email || !password) {
+//         return res.status(400).json({ message: "All fields are required." });
+//     }
+
+//     const query = "INSERT INTO collector (name, email, password) VALUES (?, ?, ?)";
+//     db.query(query, [name, email, password], (err, result) => {
+//         if (err) {
+//             console.error("Database Error:", err);
+//             return res.status(500).json({ message: "Failed to register collector." });
+//         }
+//         res.status(201).json({ message: "Collector registered successfully!", id: result.insertId });
+//     });
+// });
+
+
+// //// register api for agent 
+
+
+
+// // Handle register collector POST request
+// app.post("/registerAgent", (req, res) => {
+//     const { name, email, password } = req.body;
+//     console.log("Received data:", { name, email, password });
+
+//     if (!name || !email || !password) {
+//         return res.status(400).json({ message: "All fields are required." });
+//     }
+
+//     const query = "INSERT INTO agent (name, email, password) VALUES (?, ?, ?)";
+//     db.query(query, [name, email, password], (err, result) => {
+//         if (err) {
+//             console.error("Database Error:", err);
+//             return res.status(500).json({ message: "Failed to register collector." });
+//         }
+//         res.status(201).json({ message: "Collector registered successfully!", id: result.insertId });
+//     });
+// });
+
+
+
+// /////login api for agent     ///
+
+
+
+// /// Login route
+// app.post('/agentLogin', (req, res) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return res.status(400).json({ message: 'Email and password are required.' });
+//     }
+
+//     const query = 'SELECT * FROM agent WHERE email = ?';
+//     db.query(query, [email], (err, results) => {
+//         if (err) {
+//             console.error('Database Error:', err);
+//             return res.status(500).json({ message: 'Database error' });
+//         }
+
+//         if (results.length === 0) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         const user = results[0];
+
+//         if (user.password === password) {
+
+//                // Save user email and name in session
+//                req.session.user = { id:user.id,  email: user.email, name: user.name };
+//                console.log('Session Set:', req.session.user);
+           
+//            res.status(200).json({
+//                 message: 'Login successful',
+
+//                 status: 'success',
+//                     name: user.name,
+//                     email:user.email,
+//                     id :user.id,
+                 
+//                      // Store the complete user object in localStorage
+
+//                     // user: req.session.user,
+//                 user: { id:user.id, name: user.name, email: user.email },
+
+                
+                
+                
+//             });
+//         } else {
+//             res.status(401).json({ message: 'Incorrect password' });
+//         }
+//     });
+// });
+
+
+
+
+
+
+
+
+
+
+
+// // Serve static files (like HTML pages)
+// app.use(express.static("public"));
+
+// // Start the server
+// app.listen(port, () => {
+//     console.log(`Server running on http://localhost:${port}`);
+// });
+
+
+
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const http = require("http");
-
 const session = require('express-session');
-
 
 const app = express();
 const port = 5501;
@@ -17,22 +390,15 @@ app.use(session({
     secret: 'my_super_secret_key_123!@#$%_random_text',
     resave: false,
     saveUninitialized: true,
-  
 }));
 
 const server = http.createServer(app);
-
-
-
 const io = new Server(server, {
     cors: {
         origin: "http://127.0.0.1:5501", // Your frontend URL
         methods: ["GET", "POST"],
     },
 });
-
-
-
 
 // Middleware
 app.use(cors({
@@ -58,9 +424,7 @@ db.connect(err => {
     }
 });
 
-
-
-/// Login route
+// Login route
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
@@ -82,36 +446,18 @@ app.post('/login', (req, res) => {
         const user = results[0];
 
         if (user.password === password) {
-
-            //    Save user email and name in session
-               console.log('Session Set:', req.session.user);
-               req.session.user = { email: user.email, name: user.name };
-
-           res.status(200).json({
+            req.session.user = { email: user.email, name: user.name };
+            res.status(200).json({
                 message: 'Login successful',
-
                 status: 'success',
-                    name: user.name,
-                   
-                    
-                     // Store the complete user object in localStorage
-
-                    user: req.session.user,
-                // user: {  name: user.name, email: user.email },
-
-                
-                
-                
+                name: user.name,
+                user: req.session.user,
             });
         } else {
             res.status(401).json({ message: 'Incorrect password' });
         }
     });
 });
-
-
-
-
 
 // Get Agent List Route
 app.get('/agents', (req, res) => {
@@ -125,9 +471,6 @@ app.get('/agents', (req, res) => {
     });
 });
 
-//
-//
-
 // Plastic Submission Route
 app.post("/submitPlastic", (req, res) => {
     const { collectorId, agentId, plasticAmount } = req.body;
@@ -136,53 +479,115 @@ app.post("/submitPlastic", (req, res) => {
         return res.status(400).json({ message: "Invalid Data" });
     }
 
-    const query = "INSERT INTO submitplastic  (collectorId, agentId, plasticAmount, status) VALUES (?, ?, ?, 'pending')";
+    const query = "INSERT INTO submitplastic (collectorId, agentId, plasticAmount, status) VALUES (?, ?, ?, 'pending')";
     db.query(query, [collectorId, agentId, plasticAmount], (err, result) => {
         if (err) {
             console.error("Database Error:", err);
-            return res.status(500).json({ message: "submit failed" });
+            return res.status(500).json({ message: "Submission failed" });
         }
-
-        
-
         res.status(200).json({ message: "Submission successful!" });
     });
 });
 
+// // Accept Submission Route
+// app.post('/acceptSubmission', (req, res) => {
+//     const { submissionId } = req.body;
 
-///// response submision
-app.post('/respondSubmission', async (req, res) => {
-    try {
-        const { submissionId, action } = req.body;
+//     if (!submissionId) {
+//         return res.status(400).json({ message: "Submission ID is required." });
+//     }
 
-        if (!submissionId || !action) {
-            return res.status(400).json({ message: 'Invalid data' });
-        }
+//     const updateQuery = `UPDATE submitplastic SET status = 'accepted' WHERE id = ?`;
+//     const rewardQuery = `UPDATE collector INNER JOIN submitplastic ON collector.id = submitplastic.collectorId SET collector.rewards = collector.rewards + (submitplastic.plasticAmount * 10) WHERE submitplastic.id = ?`;
 
-        if (action === 'accept') {
-            const rewardQuery = `
-                UPDATE collector 
-                INNER JOIN submitplastic ON collector.id = submitplastic.collectorId
-                SET collector.rewards = collector.rewards + (submitplastic.plasticAmount * 10)
-                WHERE submitplastic.id = ?
-            `;
-            await dbQuery(rewardQuery, [submissionId]);
-        }
+//     db.query(updateQuery, [submissionId], (err) => {
+//         if (err) {
+//             console.error("Database Error (Accept):", err);
+//             return res.status(500).json({ message: "Failed to accept submission." });
+//         }
 
-        res.status(200).json({ message: `Action ${action} performed successfully` });
-    } catch (error) {
-        console.error('Error handling submission response:', error);
-        res.status(500).json({ message: 'Database error' });
+//         db.query(rewardQuery, [submissionId], (err) => {
+//             if (err) {
+//                 console.error("Database Error (Reward):", err);
+//                 return res.status(500).json({ message: "Failed to update rewards." });
+//             }
+
+//             res.status(200).json({ message: "Submission accepted and rewards updated!" });
+//         });
+//     });
+// });
+
+////
+
+app.post('/acceptSubmission', (req, res) => {
+    const { submissionId } = req.body;
+
+    if (!submissionId) {
+        return res.status(400).json({ message: "Submission ID is required." });
     }
+
+    // Step 1: Update submission status to 'accepted'
+    const updateQuery = `UPDATE submitplastic SET status = 'accepted' WHERE id = ?`;
+    db.query(updateQuery, [submissionId], (err, updateResult) => {
+        if (err) {
+            console.error("Database Error (Accept):", err);
+            return res.status(500).json({ message: "Failed to accept submission." });
+        }
+
+        // If no rows were updated, it means the submission ID wasn't found
+        if (updateResult.affectedRows === 0) {
+            return res.status(404).json({ message: "Submission not found." });
+        }
+
+        // Step 2: Update reward for the collector
+        const rewardQuery = `UPDATE collector INNER JOIN submitplastic ON collector.name = submitplastic.collectorId 
+                             SET collector.rewards = collector.rewards + (submitplastic.plasticAmount * 10) 
+                             WHERE submitplastic.id = ?`;
+
+        db.query(rewardQuery, [submissionId], (err, rewardResult) => {
+            if (err) {
+                console.error("Database Error (Reward):", err);
+                return res.status(500).json({ message: "Failed to update rewards." });
+            }
+
+            // If no rows were updated, the collector might not exist
+            if (rewardResult.affectedRows === 0) {
+                return res.status(404).json({ message: "Collector not found for the submission." });
+            }
+
+            // Success response
+            res.status(200).json({ message: "Submission accepted and rewards updated!" });
+        });
+    });
 });
 
 
+// Delete Submission Route
+app.delete('/deleteSubmission', (req, res) => {
+    const { id } = req.query;
 
-/////
+    if (!id) {
+        return res.status(400).json({ message: "Submission ID is required." });
+    }
 
+    const deleteQuery = `DELETE FROM submitplastic WHERE id = ?`;
+    db.query(deleteQuery, [id], (err, result) => {
+        if (err) {
+            console.error("Database Error (Delete):", err);
+            return res.status(500).json({ message: "Failed to delete submission." });
+        }
 
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "No submission found with this ID." });
+        }
+
+        res.status(200).json({ message: "Submission deleted successfully!" });
+    });
+});
+
+// Get Agent Submissions Route
 app.get('/agentSubmissions', (req, res) => {
-    const { agentId } = req.query; // ক্লায়েন্ট থেকে এজেন্টের ID নিন
+    const { agentId } = req.query;
 
     if (!agentId) {
         return res.status(400).json({ message: 'Agent ID is required.' });
@@ -195,23 +600,17 @@ app.get('/agentSubmissions', (req, res) => {
             return res.status(500).json({ message: 'Database error' });
         }
 
-        // যদি কোনও ডেটা না থাকে
         if (results.length === 0) {
             return res.status(404).json({ message: 'No submissions found for this agent.' });
         }
 
-        res.status(200).json({ submissions: results }); // সাবমিশন ডেটা রিটার্ন করুন
+        res.status(200).json({ submissions: results });
     });
 });
 
-
-
-
-
-// Handle register collector POST request
+// Register Collector Route
 app.post("/registerCollector", (req, res) => {
     const { name, email, password } = req.body;
-    console.log("Received data:", { name, email, password });
 
     if (!name || !email || !password) {
         return res.status(400).json({ message: "All fields are required." });
@@ -227,15 +626,9 @@ app.post("/registerCollector", (req, res) => {
     });
 });
 
-
-//// register api for agent 
-
-
-
-// Handle register collector POST request
+// Register Agent Route
 app.post("/registerAgent", (req, res) => {
     const { name, email, password } = req.body;
-    console.log("Received data:", { name, email, password });
 
     if (!name || !email || !password) {
         return res.status(400).json({ message: "All fields are required." });
@@ -245,19 +638,13 @@ app.post("/registerAgent", (req, res) => {
     db.query(query, [name, email, password], (err, result) => {
         if (err) {
             console.error("Database Error:", err);
-            return res.status(500).json({ message: "Failed to register collector." });
+            return res.status(500).json({ message: "Failed to register agent." });
         }
-        res.status(201).json({ message: "Collector registered successfully!", id: result.insertId });
+        res.status(201).json({ message: "Agent registered successfully!", id: result.insertId });
     });
 });
 
-
-
-/////login api for agent     ///
-
-
-
-/// Login route
+// Agent Login Route
 app.post('/agentLogin', (req, res) => {
     const { email, password } = req.body;
 
@@ -279,27 +666,12 @@ app.post('/agentLogin', (req, res) => {
         const user = results[0];
 
         if (user.password === password) {
-
-               // Save user email and name in session
-               req.session.user = { id:user.id,  email: user.email, name: user.name };
-               console.log('Session Set:', req.session.user);
-           
-           res.status(200).json({
+            req.session.user = { id: user.id, email: user.email, name: user.name };
+            res.status(200).json({
                 message: 'Login successful',
-
                 status: 'success',
-                    name: user.name,
-                    email:user.email,
-                    id :user.id,
-                 
-                     // Store the complete user object in localStorage
-
-                    // user: req.session.user,
-                user: { id:user.id, name: user.name, email: user.email },
-
-                
-                
-                
+                name: user.name,
+                user: req.session.user,
             });
         } else {
             res.status(401).json({ message: 'Incorrect password' });
@@ -307,23 +679,12 @@ app.post('/agentLogin', (req, res) => {
     });
 });
 
-
-
-
-
-
-
-
-
-
-
 // Serve static files (like HTML pages)
 app.use(express.static("public"));
 
 // Start the server
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
-
 
 
